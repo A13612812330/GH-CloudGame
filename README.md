@@ -1,6 +1,6 @@
 # GH-CloudGame
 
-> 📚 **本文档属于 GH 系列交接项目。** 总入口（全部 10 个仓库索引、可用性实测、可复制的 AI Agent prompt）：https://github.com/A13612812330/GH-Handover
+> 📚 **本文档属于 GH 系列交接项目。** 总入口（全部 10 个仓库索引、可用性实测、可复制的 AI Agent prompt）：https://github.com/GHZS-Project/GH-Handover
 
 端游云游戏「三源周报」的可复刻工程仓库 —— 脚本、词库、口径文档、AI Agent 执行契约、4 期历史产出，都在这里。
 
