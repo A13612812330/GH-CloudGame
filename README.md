@@ -70,6 +70,9 @@ GH-CloudGame/
 
 看板为单文件 HTML（内嵌数据与封面图，零外部依赖），下载后双击即可打开。
 
+> ⚠️ **GitHub 网页不会渲染 HTML**（点开会显示源码）。想看效果请先 `git clone` 到本地再双击，
+> 或在仓库根执行 `python -m http.server 8000` 后访问 `localhost:8000/outputs/`。
+
 ---
 
 ## 关键口径（详细见 docs/02）
