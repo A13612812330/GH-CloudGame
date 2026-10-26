@@ -109,11 +109,39 @@ GH-CloudGame/
 | 02 | `02_extract_steam_meta.py` | 种子 + 历史 Excel | `steam_meta.json` | ✅ |
 | 03 | `03_build_steam_chart.py` | **SteamDB 当期 Top100** | `chart.csv` | ⚠️ 需更新快照 |
 | 04 | `04_build_report.py` | 01 + 02 + 03 | 五表 Excel + `data.json` | ⚠️ 判定需撰写 |
-| 04b | `04b_make_covers.py` | Steam 封面 | `covers.json` | ✅（联网） |
-| 05 | `05_gen_board.py` | `data.json` + `covers.json` | HTML 看板 | ⚠️ 热点需撰写 |
+| 05a | `10_draft_hotspots.py` | `data.json` | `hot_draft.json` / `covers_plan.json` / `hot_review.md` | ⚠️ **半自动**：机器挑料 + 模板句，人补归因 |
+| 04b | `04b_make_covers.py` | Steam 封面（或 `--plan covers_plan.json`） | `covers.json` | ✅（联网） |
+| 05 | `05_gen_board.py` | `data.json` + `covers.json`（`--hot` 可选） | HTML 看板 | ✅ 默认手写热点；带 `--hot` 用初稿 |
 | 06 | `06_test_board.js` | 看板 HTML + `data.json` | 55 项断言结果 | ✅ |
 | 08 | `08_preflight_check.py` | 全部产物 | 体检报告 | ✅ **门禁** |
 | 07 | `07_publish_github.py` | 产出目录 | GitHub Pages 归档 | 可选 |
+
+---
+
+## 热点半自动（05a）
+
+12 条热点原来全靠手写，换期容易忘改、产出「数据是新的、结论还是上期」的假报告。
+`10_draft_hotspots.py` 把机械部分接过去了：**按规则挑料 + 套带真实数字的模板句**，
+人只补「为什么涨」和「版号」。
+
+12 个槽位里 **10 个自动**（大盘 / 搜索涨幅王 / 下载涨幅王 / 搜索榜首 / Steam 在线王 /
+三源共振 / 新游观察 / 退潮预警 / 跨端外溢 / 独立游戏王 / 移植候选），
+**1 个必须人工**（第 11 条 📜 版号重点 —— 要查国家新闻出版署当期公告，脚本拿不到）。
+
+```bash
+python 10_draft_hotspots.py --show          # 先看一眼挑了哪些标的
+python 09_run_all.py --draft-hot --from 04  # 生成初稿三件套
+#  → 看 <中间产物>/hot_review.md，改 hot_draft.json
+python 09_run_all.py --from 04b             # 自动 --plan 抓封面、--hot 出看板
+```
+
+**三道闸**，保证半成品不会当成成品发出去：
+
+| 闸 | 行为 |
+|---|---|
+| `05_gen_board.py` | 初稿里还有 `_needs_human` → **拒绝出看板**（退出码 3）；`--allow-draft` 可放行但打 `data-draft` 标记 |
+| `08_preflight_check.py` | 检出 `data-draft` 或 `[待人工填写]` → **BLOCK** |
+| `08_preflight_check.py` | 数字指纹：热点里一个本期数字都没命中 → **BLOCK** |
 
 ---
 

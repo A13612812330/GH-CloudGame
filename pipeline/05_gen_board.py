@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ============================================================================
 # 端游周报流水线 · 步骤 05：生成 HTML 看板（读 data.json）
-# 用法：python 05_gen_board.py
+# 用法：python 05_gen_board.py [--hot <hot_draft.json>] [--allow-draft]
 # ----------------------------------------------------------------------------
 # 【样式基线】用户指定：看板视觉必须沿用「端游三源周报看板_8.17-8.30.html」这一版
 #   浅色优雅风（--bg:#f4f6fb / --accent:#1e4ed8 / 6 列 KPI / 2 列 chart-card /
@@ -24,7 +24,7 @@
 #   其余 10 条为常规热点（大盘 / 退潮 / 新品 / 品类 / 竞品动作等）。
 # ============================================================================
 """端游三源周报看板生成 · 浅色优雅风（8.17-8.30 样式基线）"""
-import json, sys
+import json, os, sys
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -123,12 +123,58 @@ SUMMARY = [
     ("补充说明", "①搜索源两期各含 2 个日期列（周一），每列代表一周；②鲸云源两期均为 14 天逐日；③Steam 源为 **2026-10-12** 实时快照（Top100 筛出非网游 / 非工具端游 57 款）；**已排除网游 / 工具类与 Demo**；④本报告**不含鲸云注册数据源**。"),
 ]
 
+# ---------------------------------------------------------------- 热点来源（半自动）
+# 默认用上面手写的 HOT。要让 10_draft_hotspots.py 的初稿生效，传 --hot <json> 或设 GH_HOT。
+_HOT_FILE, _ALLOW_DRAFT, _need = None, False, []
+_argv = list(sys.argv[1:])
+if "--allow-draft" in _argv:
+    _ALLOW_DRAFT = True
+    _argv.remove("--allow-draft")
+if "--hot" in _argv:
+    _i = _argv.index("--hot")
+    if _i + 1 >= len(_argv):
+        sys.exit("[中止] --hot 后面要跟 JSON 路径")
+    _HOT_FILE = Path(_argv[_i + 1])
+elif os.environ.get("GH_HOT"):
+    _HOT_FILE = Path(os.environ["GH_HOT"])
+
+HOT_SRC = "手写（脚本内）"
+if _HOT_FILE is not None:
+    if not _HOT_FILE.is_file():
+        sys.exit("[中止] 找不到热点文件：%s" % _HOT_FILE)
+    try:
+        _h = json.loads(_HOT_FILE.read_text(encoding="utf-8"))
+    except Exception as _e:
+        sys.exit("[中止] 热点文件解析失败：%s" % _e)
+    if not isinstance(_h, list) or len(_h) != 12:
+        sys.exit("[中止] 热点必须正好 12 条，当前 %s 条"
+                 % (len(_h) if isinstance(_h, list) else "不是数组"))
+    for _i, _x in enumerate(_h, 1):
+        for _req in ("tag", "title", "desc", "src"):
+            if not _x.get(_req):
+                sys.exit("[中止] 第 %d 条缺字段 %s" % (_i, _req))
+    _need = [_i for _i, _x in enumerate(_h, 1) if _x.get("_needs_human")]
+    if _need and not _ALLOW_DRAFT:
+        print("[拒绝出看板] 第 %s 条热点仍标 _needs_human —— 这些要查外部公告或做判断，"
+              "脚本给不了。" % "、".join(map(str, _need)))
+        print("  ① 改好 %s，把这些条目的 _needs_human 去掉（或置 false）；" % _HOT_FILE.name)
+        print("  ② 只想先看版式可加 --allow-draft（会打草稿水印，08 门禁照样拦）。")
+        sys.exit(3)
+    # 下划线开头的是给人/脚本看的元信息，不进页面
+    HOT = [{k: v for k, v in _x.items() if not str(k).startswith("_")} for _x in _h]
+    HOT_SRC = "%s（%s）" % (_HOT_FILE.name, "草稿" if _need else "已复核")
+    print("[热点] 载入 %s，共 12 条" % HOT_SRC)
+
 KW = {
     "s1": ["端游名称", "本期搜索", "上期搜索", "两期合计", "环比", "关键词数", "品类", "代表性搜索词"],
     "s2": ["游戏名称", "本期下载", "上期下载", "两期合计", "环比"],
     "s3": ["中文名称", "游戏名称(原名)", "appid", "开发者", "玩法标签", "发行日期", "近一年内上线",
            "类型", "安装大小", "当前在线(10/12)", "24h峰值", "历史峰值", "独立游戏", "备注"],
 }
+# 列名带快照日期（当前在线(10/12)），必须从 data.json 派生 —— 否则换期表头与数据错位
+_online_k = next((k for k in list((data.get("s3") or [{}])[0]) if str(k).startswith("当前在线")), None)
+if _online_k:
+    KW["s3"] = [_online_k if str(k).startswith("当前在线") else k for k in KW["s3"]]
 
 # 热点实际引用到的图片才注入（去重，避免 base64 重复膨胀）
 _used = []
@@ -137,6 +183,16 @@ for _h in HOT:
         if _k not in _used:
             _used.append(_k)
 COVERS = {k: v for k, v in COVERS.items() if k in _used}
+
+# 标题与副标题从 data.json 的 meta 派生，换期不用手改
+_meta = data.get("meta") or {}
+_range = str(_meta.get("range") or "")
+_prev_lab = str(_meta.get("prev") or "")
+_snap = str(_meta.get("snapshot") or "")
+_snap_md = (_snap[5:7].lstrip("0") + "/" + _snap[8:10].lstrip("0")) if len(_snap) >= 10 else _snap
+TITLE = "端游三源周报 · " + _range.replace(" ~ ", "~")
+SUB = ("搜索 × 鲸云 × SteamDB 三源交叉验证 · 本期 {} "
+       "<b>对比上期 {}</b> · 数据截止 {}").format(_range, _prev_lab, _snap_md)
 
 payload = json.dumps({**data, "KW": KW}, ensure_ascii=False)
 hot_json = json.dumps(HOT, ensure_ascii=False)
@@ -148,7 +204,7 @@ HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>端游三源周报 · 2026-09-28~10-11</title>
+<title>__TITLE__</title>
 <style>
 :root{
   --bg:#f4f6fb; --card:#ffffff; --txt:#1c2333; --sub:#667085; --line:#e4e8f0;
@@ -393,7 +449,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <div class="hero">
     <button class="theme-btn" id="themeBtn">🌓 深色</button>
     <h1>🎮 端游三源周报</h1>
-    <div class="sub">搜索 × 鲸云 × SteamDB 三源交叉验证 · 本期 2026-09-28 ~ 10-11 <b>对比上期 9.14-9.27</b> · 数据截止 10/12</div>
+    <div class="sub">__SUB__</div>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -625,7 +681,7 @@ function vizBars(v){
     '<div class="bd"><div class="tt">'+esc(h.title)+'</div>' +
     '<div class="tx">'+esc(h.desc)+'</div>' +
     '<div class="src">来源：'+esc(h.src)+'</div></div></div>').join("");
-  $("hotDesc").textContent = "2026-10-12 联网检索：Steam 畅销榜 / 新游发售 / 版本节点 / 品类退潮 / 版号审批 / 行业事件（近 14 天） · 固定 12 条 · 末两条为「版号重点」与「端游转手游独立游戏候选」 · 封面为 Steam 商店主视觉";
+  $("hotDesc").textContent = "__SNAP__ 联网检索：Steam 畅销榜 / 新游发售 / 版本节点 / 品类退潮 / 版号审批 / 行业事件（近 14 天） · 固定 12 条 · 末两条为「版号重点」与「端游转手游独立游戏候选」 · 封面为 Steam 商店主视觉";
 })();
 
 /* ---- 细分颜色 ---- */
@@ -1004,6 +1060,13 @@ TAB_ORDER.forEach(renderTable);
 </html>"""
 
 html = (HTML.replace("__DATA__", payload).replace("__HOT__", hot_json)
-            .replace("__SUM__", sum_json).replace("__COVERS__", cov_json))
+            .replace("__SUM__", sum_json).replace("__COVERS__", cov_json)
+            .replace("__TITLE__", TITLE).replace("__SUB__", SUB)
+            .replace("__SNAP__", _snap))
+# 草稿态打标：08 门禁据此拒收，人打开源码也一眼能看出
+if _need:
+    html = html.replace('<body data-theme="light">',
+                        '<body data-theme="light" data-draft="%d">' % len(_need), 1)
 open(OUT, "w", encoding="utf-8").write(html)
 print("OK HTML: %s  %.0f KB" % (OUT, len(html)/1024))
+print("热门来源: %s%s" % (HOT_SRC, "  ⚠️ 草稿态（%d 条待人工）" % len(_need) if _need else ""))

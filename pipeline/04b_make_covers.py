@@ -9,7 +9,7 @@
 #   走了商店页 og:image 的新 CDN `shared.cdn.queniuqe.com`。
 #   所以**不要预先判定某款要走兜底**，一律先 fetch 再看返回来源标记。
 # 产出：<TMP>/covers.json  {key: "data:image/jpeg;base64,..."}
-# 用法：python 04b_make_covers.py
+# 用法：python 04b_make_covers.py [--plan <covers_plan.json>]
 # ----------------------------------------------------------------------------
 # 封面 key 与 HOT 的对应关系（⛔ 热点固定 12 条，见 05_gen_board.py 顶部规范）：
 #   常规 10 条 → spider2 / horizon5 / howtofish / aion2 / bongocat（单图）
@@ -112,6 +112,10 @@ def lerp(a, b, t):
 
 def build(d):
     """程序化品牌封面：三段渐变 + 光斑 + 斜纹 + 底部暗化 + 排版"""
+    # 颜色字段允许来自 JSON（元组会退化成列表），统一折回元组再参与运算
+    for _k in ("c1", "c2", "c3", "glow"):
+        if isinstance(d.get(_k), list):
+            d[_k] = tuple(d[_k])
     img = Image.new("RGB", (W, H))
     dr = ImageDraw.Draw(img)
     c1, c2, c3 = d["c1"], d["c2"], d["c3"]
@@ -210,6 +214,30 @@ def fetch_url(u, timeout=20, tries=5):
             time.sleep(1.2 * (k + 1))
     raise last
 
+
+# ---- 可选：--plan <json> 用 10_draft_hotspots.py 产的封面计划替换上面手写的 COVERS ----
+# 必须是显式开关：若改成「有文件就自动用」，换期时会静默沿用上一期的 appid 抓错封面。
+# 09_run_all.py 在发现 covers_plan.json 时会自动带上 --plan。
+_PLAN = None
+_argv = list(sys.argv[1:])
+if "--plan" in _argv:
+    _i = _argv.index("--plan")
+    if _i + 1 >= len(_argv):
+        sys.exit("[中止] --plan 后面要跟 JSON 路径")
+    _PLAN = Path(_argv[_i + 1])
+elif os.environ.get("GH_COVERS_PLAN"):
+    _PLAN = Path(os.environ["GH_COVERS_PLAN"])
+if _PLAN is not None:
+    if not _PLAN.is_file():
+        sys.exit("[中止] 找不到封面计划：%s" % _PLAN)
+    try:
+        _plan = json.loads(_PLAN.read_text(encoding="utf-8"))
+    except Exception as _e:
+        sys.exit("[中止] 封面计划解析失败：%s" % _e)
+    if not isinstance(_plan, dict) or not _plan:
+        sys.exit("[中止] 封面计划必须是「键 → 封面配置」的对象")
+    COVERS = _plan
+    print("[封面计划] %s → %d 张：%s" % (_PLAN.name, len(COVERS), ", ".join(sorted(COVERS))))
 
 RAW = f"{TMP}/covers_raw"
 os.makedirs(RAW, exist_ok=True)

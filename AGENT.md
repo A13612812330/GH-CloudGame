@@ -36,8 +36,9 @@
 | `pipeline/02_extract_steam_meta.py` | 汇总 Steam 元数据（appid→名称/标签/大小/峰值） | 每次必跑 |
 | `pipeline/03_build_steam_chart.py` | **SteamDB Top100 快照** + 筛非网游 | ⚠️ 跑新一期必须改 `CHART` |
 | `pipeline/04_build_report.py` | 出五表 Excel + `data.json` | ⚠️ 判定文案要你写 |
-| `pipeline/04b_make_covers.py` | 抓 Steam 真实封面 → `covers.json` | 每次必跑（联网） |
-| `pipeline/05_gen_board.py` | 生成 HTML 看板 | ⚠️ 热点与总结要你写 |
+| `pipeline/04b_make_covers.py` | 抓 Steam 真实封面 → `covers.json` | 每次必跑（联网）；带 `--plan` 时按热点初稿抓 |
+| `pipeline/10_draft_hotspots.py` | **热点半自动初稿**（12 条 + 封面计划 + 校对清单） | 见 4.3，别从零手写 |
+| `pipeline/05_gen_board.py` | 生成 HTML 看板 | ✅ 带 `--hot` 用初稿；不带则用脚本内手写热点 |
 | `pipeline/06_test_board.js` | jsdom 渲染回归（55 项断言） | 每次必跑 |
 | `pipeline/08_preflight_check.py` | **交付前体检门禁** | ⚠️ 必须 PASS 才能交 |
 | `pipeline/07_publish_github.py` | 归档到 GitHub Pages（可选） | 需要归档时 |
@@ -103,7 +104,8 @@ python 08_preflight_check.py    # ⑨ 门禁（应 PASS）
 
 ## 4. ⚠️ 必须你自己做的事（复刻的真正难点）
 
-流水线能自动算数，但**判断和叙述必须重写**。以下三项是硬要求：
+流水线能自动算数，但**判断和叙述必须重写**。以下三项是硬要求（其中 4.3 已有半自动工具，
+但「版号」与「归因」仍只能人来）：
 
 ### 4.1 `03_build_steam_chart.py` 的 `CHART` 数组
 
@@ -124,16 +126,57 @@ python 08_preflight_check.py    # ⑨ 门禁（应 PASS）
 > ⛔ **这个文件踩过坑**：曾有两条 `if/elif label == ...` 链并存，旧链在新链之后执行，把 9 款游戏的判定**静默覆盖成旧文案**。
 > 改完必须 `grep -n 'label == "<某款游戏>"' 04_build_report.py`，**命中数必须是 1**。
 
-### 4.3 `05_gen_board.py` 的 `HOT` 与 `SUMMARY`
+### 4.3 `05_gen_board.py` 的热点 12 条与 `SUMMARY`
 
-- **`HOT` 必须固定 12 条**（3 列 × 4 行，不留空位）：
-  - 第 11 条固定是 **📜 版号重点**，`cover: "license"`（程序化信息图）
-  - 第 12 条固定是 **🎮 移植候选**，`cover4: [4 个 key]`（2×2 拼贴）
-  - 其余 10 条为本期常规热点
-- **`SUMMARY`** 是页面底部总结，必须引用本期大盘数字。
-- 新增的 `cover` key 必须**同时**出现在 `04b_make_covers.py` 的 `COVERS` 字典里，否则该卡封面空白。
+**别从零手写 —— 先跑 `10_draft_hotspots.py`。**（4.3 是本仓库唯一有半自动工具的一项）
 
-> 这两块最容易「沿用上一期」。**08 门禁会用数字指纹检测**：如果热点里一个本期数字都没命中、却命中了上期总量，直接 BLOCK。
+```bash
+python 09_run_all.py --draft-hot --from 04     # 04 之后生成热点初稿
+python 09_run_all.py --from 04b                # 人改完后出看板（自动带 --plan / --hot）
+```
+
+`10_draft_hotspots.py` 会从 `data.json` 按规则挑料并套模板句，产出三个文件：
+
+| 文件 | 用途 |
+|---|---|
+| `hot_draft.json` | 12 条热点初稿；`05 --hot` 读取 |
+| `covers_plan.json` | 配套封面计划（键名由 appid 派生）；`04b --plan` 读取 |
+| `hot_review.md` | 人工校对清单，按「必改 / 建议润色 / 可用」分级 |
+
+它固定的 12 个槽位：
+
+| # | 槽位 | 是否自动 |
+|---|---|---|
+| 1 | 📈 大盘总览 | ✅ 纯数据 |
+| 2 | 🚀 搜索涨幅冠军 | ✅（已过滤小基数噪音） |
+| 3 | 📥 下载涨幅冠军 | ✅ |
+| 4 | 🏆 搜索榜首 | ✅ |
+| 5 | 🎮 Steam 在线王 | ✅ |
+| 6 | 🔗 三源共振 | ✅ |
+| 7 | 🆕 新游观察 | ✅（本期→近一月→近一年，逐级退让） |
+| 8 | 📉 退潮预警 | ✅（带基数下限） |
+| 9 | ⚠️ 跨端外溢 / 📊 品类结构 | ✅（搜索暴涨但 Steam 查无此游 → 直接标警示） |
+| 10 | 🎯 独立游戏王 | ✅ |
+| 11 | 📜 版号重点 | ❌ **必须人工**（外部公告，脚本拿不到） |
+| 12 | 🎮 移植候选 | ✅（按触屏/体积/人气打分挑 4 款） |
+
+**仍然必须人来做的两件事**：
+
+1. **第 11 条版号** —— 查国家新闻出版署当期公告。初稿里它带 `_needs_human: true`，
+   此时 `05` 会**直接拒绝出看板**（退出码 3）。
+2. **归因** —— 模板句只陈述数字（「涨了多少」），不解释「为什么涨」。
+   每条初稿的 `_hint` 字段写了该补什么，`hot_review.md` 也列成了待办表。
+
+改完把 `_needs_human` 去掉（或置 `false`）即可。只想先预览版式可加 `--allow-draft`，
+但会在 `<body>` 上打 `data-draft="N"`，**08 门禁据此一律拒收**。
+
+`SUMMARY` 仍是手写（页面底部六段总结），无初稿工具。
+
+> 12 条里的**第 11 条版号、第 12 条移植候选是固定栏目**：版号 `cover: "license"`（程序化信息图），
+> 移植候选 `cover4: [4 个 key]`（2×2 拼贴）。这两条的槽位不能挪、不能省。
+
+> 热点与总结最容易「沿用上一期」。**08 门禁用数字指纹检测**：热点里一个本期数字都没命中、
+> 却命中了上期总量 → 直接 BLOCK。
 
 ---
 
@@ -175,11 +218,18 @@ python setup.py --data-dir <你的数据根目录> --out-dir <产出目录> \
 # ① 先跑前半程，确认新表结构没变、数字能对上
 python 09_run_all.py --until 04        # 00→04；若 01 报错先看 docs/03
 
-# ② 手动改这三处（见第 4 节）：03 的 CHART、04 的 PATCH/verdict、05 的 HOT/SUMMARY
+# ② 生成热点初稿（05a），此时 05 会拒绝出看板，直到人改完
+python 09_run_all.py --draft-hot --from 04
+#    然后看 <中间产物>/hot_review.md，改 hot_draft.json：
+#    补齐第 11 条版号、给第 2~10 条补归因、去掉 _needs_human
 
-# ③ 跑完全程 + 门禁
-python 09_run_all.py --from 04
+# ③ 手动改另外两处（见 4.1 / 4.2）：03 的 CHART、04 的 PATCH/verdict
+
+# ④ 跑完全程 + 门禁（自动带 --plan 与 --hot）
+python 09_run_all.py --from 04b
 ```
+
+`SUMMARY`（底部六段总结）没有初稿工具，在 `05_gen_board.py` 里手写。
 
 如果中途失败，用 `--from <步骤号>` 断点续跑，不要从头重跑（04b 抓封面较慢）。
 

@@ -186,6 +186,21 @@ else:
     else:
         err("热点条数", "实际 %d 条，必须固定 12 条" % len(HOT))
 
+    # 草稿态：05 用 --allow-draft 放行未复核的热点时会打这个标记，这里一律拒收
+    _draft = re.search(r'<body[^>]*data-draft="(\d+)"', board or "")
+    if _draft:
+        err("看板处于草稿态", "%s 条热点标记为待人工复核（data-draft），不得对外发布"
+            % _draft.group(1))
+    else:
+        ok("非草稿态", "无 data-draft 标记")
+
+    _todo = [h.get("tag", "?") for h in HOT
+             if "待人工填写" in (str(h.get("title", "")) + str(h.get("desc", "")))]
+    if _todo:
+        err("热点含未填占位", "；".join(_todo))
+    else:
+        ok("无未填占位", "")
+
     if len(HOT) >= 11 and "版号" in (HOT[10].get("tag", "") + HOT[10].get("title", "")):
         ok("第 11 条 = 版号重点", HOT[10].get("title", "")[:30])
     else:

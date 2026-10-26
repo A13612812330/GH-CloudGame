@@ -38,6 +38,7 @@ STEPS = [
     ("02", "py", "02_extract_steam_meta.py", "抽取 Steam 元数据（appid → 名称/价格/标签）"),
     ("03", "py", "03_build_steam_chart.py", "合并 SteamDB Top100 快照 → chart.csv"),
     ("04", "py", "04_build_report.py", "生成 5-sheet Excel 大报告 + data.json"),
+    ("05a", "py", "10_draft_hotspots.py", "生成 12 条热点初稿（机器挑料 + 模板句，需 --draft-hot）"),
     ("04b", "py", "04b_make_covers.py", "抓取热点封面（Steam 主视觉 / 程序化兜底）"),
     ("05", "py", "05_gen_board.py", "生成单文件 HTML 看板"),
     ("06", "node", "06_test_board.js", "jsdom 回归测试（55 项断言）"),
@@ -50,7 +51,7 @@ ORDER = [s[0] for s in STEPS]
 
 def parse_args(argv):
     opt = {"publish": False, "no_gate": False, "list": False,
-           "from": None, "until": None, "yes": False}
+           "from": None, "until": None, "yes": False, "draft_hot": False}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -62,6 +63,8 @@ def parse_args(argv):
             opt["list"] = True
         elif a in ("--yes", "-y"):
             opt["yes"] = True
+        elif a == "--draft-hot":
+            opt["draft_hot"] = True
         elif a == "--from" and i + 1 < len(argv):
             i += 1
             opt["from"] = argv[i]
@@ -80,6 +83,9 @@ def parse_args(argv):
 
 def pick_steps(opt):
     steps = list(STEPS)
+    if not opt["draft_hot"]:
+        # 05a 只在显式 --draft-hot 时跑；默认沿用 05 里已复核的手写热点
+        steps = [s for s in steps if s[0] != "05a"]
     if not opt["publish"]:
         steps = [s for s in steps if s[0] != "07"]
     if opt["no_gate"]:
@@ -165,7 +171,8 @@ def preflight(need_node: bool):
     return problems, node_path
 
 
-def run_one(name: str, kind: str, script: str, desc: str, node_path: str = "") -> int:
+def run_one(name: str, kind: str, script: str, desc: str, node_path: str = "",
+             extra=None) -> int:
     exe = CFG.node if kind == "node" else CFG.python
     path = HERE / script
     if not path.is_file():
@@ -176,10 +183,12 @@ def run_one(name: str, kind: str, script: str, desc: str, node_path: str = "") -
         return 1
     print("─" * 74)
     print("▶ [%s] %s" % (name, desc))
-    print("  %s %s" % (Path(exe).name, script))
+    _extra = list(extra or [])
+    print("  %s %s%s" % (Path(exe).name, script,
+                         " " + " ".join(_extra) if _extra else ""))
     t0 = time.time()
     try:
-        proc = subprocess.run([exe, str(path)], cwd=str(HERE),
+        proc = subprocess.run([exe, str(path)] + _extra, cwd=str(HERE),
                               env=step_env(kind, node_path),
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                               text=True, encoding="utf-8", errors="replace")
@@ -249,14 +258,33 @@ def main() -> int:
 
     t_all = time.time()
     done = []
+    _hot_json = CFG.tmp / "hot_draft.json"
+    _plan_json = CFG.tmp / "covers_plan.json"
     for name, kind, script, desc in steps:
-        rc = run_one(name, kind, script, desc, node_path)
+        extra = []
+        if name == "04b" and _plan_json.is_file():
+            # 封面计划与热点初稿同步产出；显式传 --plan，避免 04b 自行猜
+            extra = ["--plan", str(_plan_json)]
+            print("  封面计划: %s" % _plan_json.name)
+        if name == "05":
+            if _hot_json.is_file():
+                # 10 的初稿存在就交给 05 校验：仍有 _needs_human 的会被 05 挡下（退出码 3）
+                extra = ["--hot", str(_hot_json)]
+                print("  热点来源: %s（05 会校验是否还有待人工条目）" % _hot_json.name)
+            else:
+                print("  热点来源: 05 脚本内手写 HOT（未发现 hot_draft.json）")
+        rc = run_one(name, kind, script, desc, node_path, extra)
         if rc != 0:
             print("\n" + "=" * 74)
             print("❌ 流水线在第 [%s] 步中止。已完成的步骤：%s"
                   % (name, " → ".join(done) if done else "（无）"))
             print("=" * 74)
-            print("  修完该步后可从断点继续：  python 09_run_all.py --from %s" % name)
+            if name == "05":
+                print("  若 05 是被「热点待人工」挡下的（退出码 3）：编辑 %s，"
+                      "去掉 _needs_human 后重跑：" % _hot_json.name)
+                print("    python 09_run_all.py --from 04b")
+            else:
+                print("  修完该步后可从断点继续：  python 09_run_all.py --from %s" % name)
             return 1
         done.append(name)
 
