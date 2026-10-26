@@ -1,5 +1,7 @@
 # GH-CloudGame
 
+> 📚 **本文档属于 GH 系列交接项目。** 总入口（全部 10 个仓库索引、可用性实测、可复制的 AI Agent prompt）：https://github.com/A13612812330/GH-Handover
+
 端游云游戏「三源周报」的可复刻工程仓库 —— 脚本、词库、口径文档、AI Agent 执行契约、4 期历史产出，都在这里。
 
 **给同事的一句话用法**：拿到自己的两份平台导出表 → 把这个仓库交给 AI Agent → 让它读 [`AGENT.md`](AGENT.md) → 跑出同款 Excel 五表 + HTML 看板。
