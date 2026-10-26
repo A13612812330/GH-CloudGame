@@ -215,6 +215,17 @@ RAW = f"{TMP}/covers_raw"
 os.makedirs(RAW, exist_ok=True)
 
 
+def _cache_put(cache, srctag, raw, tag):
+    """落盘原图 + 来源旁注，供下次缓存命中时如实回报来源。"""
+    try:
+        if not os.path.isdir(RAW):
+            os.makedirs(RAW, exist_ok=True)
+        open(cache, "wb").write(raw)
+        open(srctag, "w", encoding="utf-8").write(tag)
+    except Exception:
+        pass
+
+
 def fetch_steam(appid):
     """三级策略：老 CDN header.jpg → 商店页 og:image（新 CDN）→ None（走程序化兜底）
 
@@ -224,11 +235,18 @@ def fetch_steam(appid):
     返回 (PIL.Image, 来源标记)。
     """
     cache = f"{RAW}/{appid}.jpg"
+    srctag = f"{RAW}/{appid}.src"
     if os.path.exists(cache) and os.path.getsize(cache) > 4096:
-        return fit16x9(Image.open(cache).convert("RGB")), "real-og"
+        # 来源标记必须如实回读：早期版本一律返回 real-og，导致日志失真
+        try:
+            tag = open(srctag, encoding="utf-8").read().strip() or "cache"
+        except Exception:
+            tag = "cache"
+        return fit16x9(Image.open(cache).convert("RGB")), tag
     try:
         raw = fetch_url(CDN % appid, 12)
         Image.open(io.BytesIO(raw)).verify()
+        _cache_put(cache, srctag, raw, "real-cdn")
         return fit16x9(Image.open(io.BytesIO(raw)).convert("RGB")), "real-cdn"
     except Exception:
         pass
@@ -238,7 +256,7 @@ def fetch_steam(appid):
         if not m:
             return None, "none"
         raw = fetch_url(m.group(1).replace("&amp;", "&"), 25)
-        open(cache, "wb").write(raw)
+        _cache_put(cache, srctag, raw, "real-og")
         return fit16x9(Image.open(io.BytesIO(raw)).convert("RGB")), "real-og"
     except Exception:
         return None, "none"
@@ -260,7 +278,7 @@ def main():
     json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False)
     for k, (how, kb) in stat.items():
         print("  %-12s %-10s %4d KB(base64)" % (k, how, kb))
-    real_n = sum(1 for v in stat.values() if v[0].startswith("real"))
+    real_n = sum(1 for v in stat.values() if v[0].startswith("real") or v[0] == "cache")
     print("OK covers.json -> %s  (%d 张，真实 %d / 生成 %d，合计 %.0f KB)"
           % (OUT, len(out), real_n, len(out) - real_n, sum(v[1] for v in stat.values())))
 

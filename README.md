@@ -22,22 +22,35 @@
 
 ```bash
 pip install -r requirements.txt
-npm i jsdom
+npm i jsdom                 # 仅 06 回归测试需要；不装也行，09 会跳过检查并提示
 
 cd pipeline
-# 用仓库自带样例跑通（数据源 = ../samples，产出到 ../outputs/_local）
+# 1) 配一次路径（也可直接跑 python setup.py 弹窗点选文件夹）
 python setup.py --data-dir ../samples --out-dir ../outputs/_local \
                 --cur 9.28-10.11 --prev 9.14-9.27 --run-date 2026-10-12
-python 00_probe_inputs.py && python 01_prep_search_dl.py && python 02_extract_steam_meta.py
-python 03_build_steam_chart.py && python 04_build_report.py
-python 04b_make_covers.py && python 05_gen_board.py
-node 06_test_board.js && python 08_preflight_check.py
+
+# 2) 一条命令跑完 00 → 08（含环境自检 + 回归测试 + 交付门禁）
+python 09_run_all.py
+```
+
+就这两步。`09_run_all.py` 会按固定顺序执行、逐步打印、**任何一步失败立即中止**，
+最后跑 08 门禁；门禁 PASS 才代表产物可交付。
+
+常用变体：
+
+```bash
+python 09_run_all.py --list              # 只看会跑哪些步骤
+python 09_run_all.py --until 05          # 只跑到看板生成（调试样式用）
+python 09_run_all.py --from 06           # 从断点续跑，跳过已完成的步骤
+python 09_run_all.py --publish           # 额外跑 07 归档到 GitHub Pages
+python 09_run_all.py --no-gate           # 跳过 08 门禁（仅调试，产物不可交付）
 ```
 
 不方便用命令行？`python setup.py` 会弹出文件夹选择框，点选数据目录即可。
 
 > ⚠️ **跑新一期前必读** [`AGENT.md`](AGENT.md) 第 4 节：SteamDB 快照、判定文案、热点 12 条
 > 这三样必须**现场重写**，脚本里固化的是 2026-10-12 那期的内容。
+> 如果没重写就跑，**08 门禁会拦住**（它会用「数字指纹」认出文案还停在上期）。
 
 ---
 
@@ -50,7 +63,7 @@ GH-CloudGame/
 ├── config.example.json   路径配置模板（setup.py 会自动生成 config.json）
 ├── requirements.txt      Python 依赖
 ├── package.json          Node 依赖（jsdom）
-├── pipeline/             流水线 00 → 08
+├── pipeline/             流水线 00 → 09（09 = 一键入口，其余为单步）
 ├── assets/               端游词库 + Steam 元数据种子
 ├── samples/              两期真实样例数据（可直接跑通）
 ├── docs/                 口径 / 格式 / 看板规范 / 坑位清单
@@ -90,6 +103,7 @@ GH-CloudGame/
 
 | 步骤 | 脚本 | 输入 | 输出 | 能否自动 |
 |---|---|---|---|---|
+| **09** | **`09_run_all.py`** | 配置就绪即可 | 按序跑完下列全部步骤 | ✅ **一键入口** |
 | 00 | `00_probe_inputs.py` | 两期 xlsx | 控制台结构报告 | ✅ |
 | 01 | `01_prep_search_dl.py` | 两期 xlsx + 词库 | `search_agg.csv` / `dl_agg.csv` / `dl_daily.csv` | ✅ |
 | 02 | `02_extract_steam_meta.py` | 种子 + 历史 Excel | `steam_meta.json` | ✅ |

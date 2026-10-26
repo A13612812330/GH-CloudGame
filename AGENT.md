@@ -30,6 +30,7 @@
 |---|---|---|
 | `pipeline/_cfg.py` | 统一配置层。**所有路径只从这里来** | 不要改，除非要加新配置项 |
 | `pipeline/setup.py` | 配置向导（GUI 选文件夹 / 命令行传参） | 第一步就跑它 |
+| `pipeline/09_run_all.py` | **一键跑全流程**（含环境自检 / 断点续跑 / 门禁） | 配好之后就用它，别手敲单步 |
 | `pipeline/00_probe_inputs.py` | 探查 xlsx 的 sheet 与列结构 | 拿到格式陌生的新表时先跑 |
 | `pipeline/01_prep_search_dl.py` | 搜索与下载清洗、跨期 join | 每次必跑 |
 | `pipeline/02_extract_steam_meta.py` | 汇总 Steam 元数据（appid→名称/标签/大小/峰值） | 每次必跑 |
@@ -70,21 +71,30 @@ cd pipeline
 python setup.py --data-dir ../samples --out-dir ../outputs/_local \
                 --cur 9.28-10.11 --prev 9.14-9.27 --run-date 2026-10-12
 
-# 3.2 跑流水线（顺序不可乱）
-python 00_probe_inputs.py
-python 01_prep_search_dl.py
-python 02_extract_steam_meta.py
-python 03_build_steam_chart.py
-python 04_build_report.py
-python 04b_make_covers.py      # 联网抓封面，可能较慢
-python 05_gen_board.py
+# 3.2 一条命令跑完 00 → 08（环境自检 → 逐步执行 → 06 回归 → 08 门禁）
+python 09_run_all.py
+```
 
-# 3.3 验证
-node 06_test_board.js           # 应输出「🎉 全部通过」
-python 08_preflight_check.py    # 应输出 PASS
+**首选 `09_run_all.py`**，不要手敲单步：它保证顺序正确（04b 依赖 04 的 `data.json`，
+05 依赖 04b 的 `covers.json`），任何一步失败立即中止并在最后提示断点续跑命令。
+要单步调试时才逐个跑：
+
+```bash
+python 00_probe_inputs.py       # ① 输入结构
+python 01_prep_search_dl.py     # ② 清洗 + 跨期
+python 02_extract_steam_meta.py # ③ Steam 元数据
+python 03_build_steam_chart.py  # ④ SteamDB 快照合并
+python 04_build_report.py       # ⑤ Excel + data.json
+python 04b_make_covers.py       # ⑥ 封面（联网，可能较慢）
+python 05_gen_board.py          # ⑦ 看板
+node 06_test_board.js           # ⑧ 回归（应「🎉 全部通过」）
+python 08_preflight_check.py    # ⑨ 门禁（应 PASS）
 ```
 
 产出在 `outputs/_local/`。
+
+> **判定标准**：`09_run_all.py` 退出码 `0` 且末尾出现 `门禁已通过（08 PASS）`。
+> 退出码 `1` = 某步失败或门禁拦截，**此时产物一律不许交付**。
 
 > **第一次跑 04/05 时，产出的判定与热点是 2026-10-12 那期的文案**（脚本里固化的）。
 > 这在「跑样例」场景是对的（就是复刻那一期），但**跑新一期绝不能这样** —— 见第 4 节。
@@ -161,22 +171,20 @@ python 08_preflight_check.py    # 应输出 PASS
 cd pipeline
 python setup.py --data-dir <你的数据根目录> --out-dir <产出目录> \
                 --cur <本期目录名> --prev <上期目录名> --run-date <YYYY-MM-DD>
-python 08_preflight_check.py --help 2>/dev/null || true   # 先确认配置能解析
-python 00_probe_inputs.py          # ① 看新表结构有没有变
-python 01_prep_search_dl.py        # ② 清洗 + 跨期
-python 02_extract_steam_meta.py    # ③ 元数据
-# ④ 手动更新 03 的 CHART（SteamDB 当期 Top100）
-python 03_build_steam_chart.py
-# ⑤ 手动写 04 的 PATCH / verdict
-python 04_build_report.py
-# ⑥ 手动写 05 的 HOT（12 条）/ SUMMARY
-python 04b_make_covers.py
-python 05_gen_board.py
-node 06_test_board.js
-python 08_preflight_check.py       # 必须 PASS
+
+# ① 先跑前半程，确认新表结构没变、数字能对上
+python 09_run_all.py --until 04        # 00→04；若 01 报错先看 docs/03
+
+# ② 手动改这三处（见第 4 节）：03 的 CHART、04 的 PATCH/verdict、05 的 HOT/SUMMARY
+
+# ③ 跑完全程 + 门禁
+python 09_run_all.py --from 04
 ```
 
-**顺序不可乱**：04b 依赖 04 的 `data.json`，05 依赖 04b 的 `covers.json`。
+如果中途失败，用 `--from <步骤号>` 断点续跑，不要从头重跑（04b 抓封面较慢）。
+
+**顺序不可乱**：04b 依赖 04 的 `data.json`，05 依赖 04b 的 `covers.json` —— `09_run_all.py`
+已把这层依赖写死在步骤表里，所以**不要自己重排**。
 
 ---
 

@@ -1,10 +1,13 @@
 # 本地配置（每人路径不同，不入库）
 config.json
+_cfg_*.json
 
-# 中间产物
+# 中间产物 / 试跑输出
 _tmp_run/
 .tmp_*/
 outputs/_local/
+_local/
+*.log
 
 # Python
 __pycache__/
