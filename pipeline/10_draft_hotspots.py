@@ -604,7 +604,7 @@ def main():
     if need:
         print()
         print("[注意] 第 %s 条标了 _needs_human，05 默认会拒绝出看板。" % "、".join(map(str, need)))
-        print("       改完 hot_draft.json 把那两条的 _needs_human 去掉（或置 false）即可。")
+        print("       改完 hot_draft.json 把这些条目的 _needs_human 去掉（或置 false）即可。")
     return 0
 
 
