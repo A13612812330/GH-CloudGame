@@ -1,0 +1,26 @@
+# 本地配置（每人路径不同，不入库）
+config.json
+
+# 中间产物
+_tmp_run/
+.tmp_*/
+outputs/_local/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 备份（脚本历史版本，不入库）
+*.bak
+*.bak2-*
+*.bak3-*
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+~$*
+.vscode/
+.idea/

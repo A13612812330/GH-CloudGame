@@ -1,0 +1,12 @@
+{
+  "name": "gh-cloudgame",
+  "version": "1.0.0",
+  "private": true,
+  "description": "端游云游戏三源周报流水线 · Node 侧依赖（仅回归测试用）",
+  "scripts": {
+    "test": "node pipeline/06_test_board.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

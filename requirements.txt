@@ -1,0 +1,7 @@
+# 端游三源周报流水线 · Python 依赖
+pandas>=2.0
+openpyxl>=3.1
+Pillow>=10.0
+
+# 可选：读取旧版 .xls（鲸云早期导出）
+# xlrd>=2.0

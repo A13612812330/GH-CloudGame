@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GH-CloudGame · 端游云游戏三源周报</title>
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#1a2233; --sub:#5b6779; --line:#e3e8f2;
+    --accent:#1e4ed8; --accent-soft:#eaefff; --grad:linear-gradient(135deg,#1e4ed8 0%,#3f7be8 55%,#5aa9f0 100%);
+    --up:#e03e3e; --down:#12a150;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased; padding:0 0 60px;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+  .hero{
+    background:var(--grad); color:#fff; border-radius:0 0 26px 26px;
+    padding:46px 22px 40px; margin-bottom:34px; position:relative; overflow:hidden;
+  }
+  .hero::after{
+    content:""; position:absolute; inset:0; opacity:.16;
+    background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
+    background-size:34px 34px; pointer-events:none;
+  }
+  .hero .inner{max-width:996px;margin:0 auto;position:relative;z-index:1}
+  .badge{
+    display:inline-block; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.4);
+    border-radius:999px; padding:3px 13px; font-size:12.5px; letter-spacing:.4px; margin-bottom:14px;
+  }
+  .hero h1{font-size:29px; font-weight:700; letter-spacing:.3px}
+  .hero p{margin-top:9px; font-size:14px; opacity:.92; max-width:640px}
+
+  .sect-title{
+    display:flex; align-items:center; gap:10px; margin:0 0 16px;
+    font-size:16px; font-weight:700;
+  }
+  .sect-title::before{
+    content:""; width:4px; height:16px; border-radius:2px; background:var(--accent);
+  }
+  .sect-title .n{font-weight:400;color:var(--sub);font-size:13px}
+
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:15px;
+    padding:19px 20px 17px; transition:.18s ease;
+  }
+  .card:hover{transform:translateY(-2px); box-shadow:0 10px 26px rgba(30,78,216,.11); border-color:#c9d7f7}
+  .card .top{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+  .card .period{font-size:16.5px; font-weight:700; letter-spacing:.2px}
+  .card .date{font-size:12px; color:var(--sub); white-space:nowrap}
+  .card .desc{margin-top:7px; font-size:13.5px; color:var(--sub); min-height:42px}
+  .card .links{margin-top:13px; display:flex; gap:9px; flex-wrap:wrap}
+  .btn{
+    display:inline-flex; align-items:center; gap:5px; text-decoration:none;
+    font-size:13px; padding:6px 14px; border-radius:9px; transition:.15s;
+    border:1px solid var(--line); color:var(--ink); background:#fbfcff;
+  }
+  .btn:hover{background:var(--accent-soft); border-color:#b9caf5; color:var(--accent)}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff}
+  .btn.primary:hover{background:#1a43bd; color:#fff}
+
+  .tagline{margin-top:9px; font-size:12.5px; color:var(--sub)}
+  .up{color:var(--up); font-weight:600}
+  .down{color:var(--down); font-weight:600}
+
+  .note{
+    margin-top:34px; background:var(--card); border:1px solid var(--line); border-radius:15px;
+    padding:20px 22px;
+  }
+  .note h3{font-size:14.5px; margin-bottom:10px}
+  .note ul{margin-left:18px; font-size:13.5px; color:var(--sub)}
+  .note li{margin:5px 0}
+  .note a{color:var(--accent); text-decoration:none}
+  .note a:hover{text-decoration:underline}
+  code{background:#eef2fb; padding:1.5px 6px; border-radius:5px; font-size:12.5px;
+       font-family:ui-monospace,Consolas,monospace}
+
+  footer{margin-top:30px; text-align:center; font-size:12.5px; color:#93a0b4}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="inner">
+    <div class="badge">GH-CloudGame</div>
+    <h1>端游云游戏 · 三源周报</h1>
+    <p>搜索（神策）× 下载（鲸云）× Steam — 跨期对比、三源交叉验证，输出可直读的看板与 Excel 五表。</p>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="sect-title">历史产出 <span class="n">4 期 · 最新 2026-10-12</span></div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="top">
+        <div class="period">9.28 – 10.11</div>
+        <div class="date">2026-10-12</div>
+      </div>
+      <div class="desc">搜索 <span class="up">+72.9%</span>、下载 <span class="up">+46.0%</span>；含国庆 10.1–10.7，涨幅须先剔除假期效应。本期识别出跨端数据混流（OVERPEAK 实为手游）。</div>
+      <div class="links">
+        <a class="btn primary" href="2026-10-12/端游三源周报看板_9.28-10.11.html">打开看板</a>
+        <a class="btn" href="2026-10-12/端游三源周报_大报告_2026-10-12.xlsx">Excel 五表</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top">
+        <div class="period">9.14 – 9.27</div>
+        <div class="date">2026-09-28</div>
+      </div>
+      <div class="desc">搜索 <span class="up">+1.5%</span>、下载 <span class="down">−11.5%</span>；搜索基本走平、下载回落，属平台侧需求收缩而非端游失速。</div>
+      <div class="links">
+        <a class="btn primary" href="2026-09-28/端游三源周报看板_9.14-9.27.html">打开看板</a>
+        <a class="btn" href="2026-09-28/端游三源周报_大报告_2026-09-28.xlsx">Excel 五表</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top">
+        <div class="period">8.31 – 9.13</div>
+        <div class="date">2026-09-14</div>
+      </div>
+      <div class="desc">跨期对比口径在本期固化（本期两周 vs 上期两周）。三源交叉重点表首次并入明细表。</div>
+      <div class="links">
+        <a class="btn primary" href="2026-09-14/端游三源周报看板_8.31-9.13.html">打开看板</a>
+        <a class="btn" href="2026-09-14/端游三源周报_大报告_2026-09-14.xlsx">Excel 五表</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="top">
+        <div class="period">8.17 – 8.30</div>
+        <div class="date">2026-08-31</div>
+      </div>
+      <div class="desc">《渔力全开》三源共振：搜索 <span class="up">+264%</span>、鲸云下载第 1、Steam 周销量第 1。看板样式基线（浅色优雅风）定型于此。</div>
+      <div class="links">
+        <a class="btn primary" href="2026-08-31/端游三源周报看板_8.17-8.30.html">打开看板</a>
+        <a class="btn" href="2026-08-31/端游三源周报_8.17-8.30.xlsx">Excel</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <h3>怎么用这个仓库</h3>
+    <ul>
+      <li><b>只想看报告</b>：点上面任意一期的「打开看板」。看板是单文件 HTML，数据与封面全部内嵌，离线也能看。</li>
+      <li><b>想复刻一期</b>：把仓库交给 AI Agent，让它读 <code>AGENT.md</code>，按里面的执行契约跑。</li>
+      <li><b>想自己跑</b>：<code>python pipeline/setup.py</code> 选好数据目录，然后 <code>01 → 05</code> 依次执行。</li>
+      <li><b>交付前</b>：必须过 <code>python pipeline/08_preflight_check.py</code>（拦住"数据是新的、文案是旧的"）。</li>
+    </ul>
+  </div>
+
+  <footer>GH-CloudGame · 端游云游戏三源周报工程仓库</footer>
+</div>
+
+</body>
+</html>

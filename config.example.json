@@ -1,0 +1,26 @@
+{
+  "_说明": "复制为 config.json 后改成你机器上的路径；或直接运行 python pipeline/setup.py 用图形界面选。config.json 不会被提交（见 .gitignore）。",
+  "data_dir": "../samples",
+  "out_dir": "./_local",
+  "tmp_dir": "./_tmp_run",
+  "assets_dir": "../assets",
+  "python": "python",
+  "node": "node",
+  "node_path": "",
+  "pages_base": "",
+  "period": {
+    "cur": {
+      "label": "9.28-10.11",
+      "dir": "9.28-10.11",
+      "search": "搜索量9.28-10.11.xlsx",
+      "dl": "鲸云下载.xlsx"
+    },
+    "prev": {
+      "label": "9.14-9.27",
+      "dir": "9.14-9.27",
+      "search": "搜索9.14-9.27.xlsx",
+      "dl": "鲸云下载.xlsx"
+    }
+  },
+  "run_date": "2026-10-12"
+}
