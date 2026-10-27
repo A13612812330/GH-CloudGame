@@ -113,15 +113,16 @@ HOT = [
 ]
 
 SUMMARY = [
-    ("本期大盘", "**国庆假期拉动双源同涨**：端游搜索 300.38 万次 vs 上期 173.77 万次（**+72.9%**；全站同期 +53.3%，端游占比 19.56% → **22.05%**，跑赢大盘约 19.6pp）；鲸云下载 104,846 次 vs 上期 71,795 次（**+46.0%**）。**本期含国庆 10.1-10.7，环比涨幅须先剔除假期效应再解读**。"),
-    ("口径说明", "对比基准为**上期两周（9.14-9.27）**，非本期内部 W1 vs W2。两期粒度不同：搜索源两期各含 2 个周一列（9/28 与 10/5 / 9/14 与 9/21），**每列代表一周**；下载源本期与上期**均为 14 天逐日**（9.28~10.11 / 9.14~9.27），时间跨度等效、可直接比。"),
-    ("数据质量提示", "①《OVERPEAK》跃居搜索第 2（31.8 万次、+1082%）实为**国际服手游**（中文名「巅峰崛起」），热度主要来自移动端与渠道站导流 —— 神策搜索源不分端手游，**跨端外溢会污染端游榜**；②其搜索含泛词「超人」9.96 万（占 31%），「OVER / OVE」等截断词约 2.97 万在 OVERPEAK 与守望先锋之间无法完全区分（两期使用同一词库，故**跨期趋势不受影响**，仅绝对归属存疑）；③本期新增词库 3 条（OVERPEAK / 梦想之路 / 王国保卫战），修正了此前把 OVER* 截断词误计入守望先锋的问题（守望先锋由错误的 +941.9% 回落为 +97.7%）。"),
-    ("最大黑马", "**《OVERPEAK / 超人模拟器》**搜索 318,165 次、跨期 +1082%，跃居端游搜索第 2。但它**不是端游**（国际服手游，包名 com.rusergames.overpeak），云游戏上架价值需重估；本期真正属于端游的增量在「模拟驾驶」与「IP 大作」两条线。"),
-    ("下载冠军", "**《漫威蜘蛛侠2》** 8,212 次（第 1）跨期 **+278.4%**，搜索同步 +216.4%，系列作《迈尔斯莫拉莱斯》+148.1% —— 本期最强双源共振，两作齐飞，建议做系列组合位。"),
-    ("品类红利", "**模拟驾驶**是假期最大赢家：**巴士模拟**搜索 +1280.8%（125,499 次）、**软体汽车** +577.1%（56,255 次）、**极限竞速：地平线5** 搜索 +128.0% / 下载 +110.1%、**欧洲卡车模拟器** +89.4%、遨游中国2 下载 +51.3%。长时段、低操作门槛，最适配云游戏资源位。"),
-    ("退潮预警", "**《渔力全开》**由双源第 1 退至下载第 3：下载 5,305 次跨期 **-39.5%**（大盘 +46.0%，跑输约 86pp），搜索 -0.8%（大盘 +72.9%），Steam 在线已跌出 Top100。上期「三源共振冠军」的荣光不再，建议转存量运营。"),
-    ("补充说明", "①搜索源两期各含 2 个日期列（周一），每列代表一周；②鲸云源两期均为 14 天逐日；③Steam 源为 **2026-10-12** 实时快照（Top100 筛出非网游 / 非工具端游 57 款）；**已排除网游 / 工具类与 Demo**；④本报告**不含鲸云注册数据源**。"),
+    ("本期大盘", "**假期效应消退，两源同步回落**：端游搜索 223.17 万次 vs 上期 300.38 万次（**-25.7%**；全站 -20.7%，端游占比 22.05% → **20.65%**，跑输大盘约 5.0pp）；鲸云下载 83,907 次 vs 上期 104,846 次（**-20.0%**）。上期含国庆 10.1-10.7、本期为纯工作日，**回落首先是假期结束，不是需求萎缩**。"),
+    ("口径说明", "对比基准为**上期两周（9.28-10.11）**，非本期内部 W1 vs W2。两期粒度不同但跨度等效：搜索两期各含 2 个周一列（10/12 与 10/19 / 9/28 与 10/5），**每列代表一周**；下载**本期为 2 列周汇总、上期为 14 天逐日**，两者均覆盖 14 天，可直接比。"),
+    ("假期效应是双向的", "上期端游搜索 **+72.9%、跑赢全站 19.6pp**；本期 **-25.7%、跑输全站 5.0pp** —— 同一批用户在假期被放大、假期后又回吐，且端游的放大与回吐幅度都大于全站。判断端游景气度只看**相对全站的超额**，不看绝对环比。"),
+    ("逆势主线：拟真驾驶", "下载大盘 -20.0% 的背景下，**极限竞速：地平线5** 下载 7,212（第 1）**+43.8%**、地平线6 1,572（**+51.2%**）、地平线4 458（+19.6%）、欧卡2 1,396（+1.4%）、俄罗斯钓鱼4 777（**+89.1%**）—— 本期**唯一整条线集体逆势**的品类。"),
+    ("本期黑马：月球清洁队", "10/23 上线即 **44,301 在线（Steam 第 64）**、24h 峰值 51,686；2 人团队 DragDrop Games 的 16 人合作清洁模拟，首周末同接破 3.6 万、好评率约 76%，最低配置仅 **GTX 1650 / 8GB**。同窗口新品：《最终幻想：共鸣》（10/23 Steam，2.44 万）、《雾锁王国》正式版（10/15，5.25 万）。"),
+    ("上期爆款集体腰斩", "**OVERPEAK** 搜索 -81.8%（318,165 → 57,991，且本就不是端游）、**软体汽车** -68.8%、**渔力全开** -57.9%（下载 -71.4%）、**漫威蜘蛛侠2** -57.1%（下载 -33.5%）—— 上期四个头条本期全部腰斩，**脉冲型热度的半衰期约 2 周**，按爆款配的资源位应全部降级。"),
+    ("抗跌基本盘", "我的世界 -12.6%、GTA -7.2%、NBA2K -8.4%、三角洲行动 -10.1%、ROBLOX -15.9%、植物大战僵尸 -25.0% —— 常青款跌幅普遍小于大盘 10~18pp，是资源位的稳定底盘，**不宜随大盘下行而缩减**。"),
+    ("补充说明", "①搜索两期各含 2 个周一列，每列代表一周；②下载本期 2 列周汇总 / 上期 14 天逐日，均覆盖 14 天；③Steam 源改用**官方接口**取榜（SteamDB 已对自动化 403），快照 **2026-10-27**，筛出非网游/非工具端游 **59 款**；**新进榜标的的历史峰值以本期 24h 峰值为下限**，真实值可能更高；④**不含鲸云注册数据源**。"),
 ]
+
 
 # ---------------------------------------------------------------- 热点来源（半自动）
 # 默认用上面手写的 HOT。要让 10_draft_hotspots.py 的初稿生效，传 --hot <json> 或设 GH_HOT。
@@ -193,6 +194,19 @@ _snap_md = (_snap[5:7].lstrip("0") + "/" + _snap[8:10].lstrip("0")) if len(_snap
 TITLE = "端游三源周报 · " + _range.replace(" ~ ", "~")
 SUB = ("搜索 × 鲸云 × SteamDB 三源交叉验证 · 本期 {} "
        "<b>对比上期 {}</b> · 数据截止 {}").format(_range, _prev_lab, _snap_md)
+
+# 下载源粒度每期不同（可能 14 天逐日、也可能 2 列周汇总）——文案必须跟着变，不能写死
+DAILY_N = len(((data.get("daily") or {}).get("labels")) or [])
+DL_SPAN = "14 天逐日" if DAILY_N >= 7 else "%d 个周汇总" % DAILY_N
+DAILY_TITLE = ("📉 鲸云下载 14 天逐日趋势" if DAILY_N >= 7
+               else "📉 鲸云下载分期走势（本期 %d 个周汇总）" % DAILY_N)
+DAILY_SUB = ("本期 %s 每日下载总量，假期与周末双高峰" % _range
+             if DAILY_N >= 7 else
+             "本期导出仅含 %d 个周汇总列、无逐日明细；单点代表一周合计" % DAILY_N)
+FOOT_SRC = ("数据来源：%s（神策·搜索事件，本期两个周一快照）· %s（神策·云游戏，%s）· "
+            "Steam 官方接口 %s 快照 · 热点为 %s 联网检索"
+            % (CFG.search_file("cur").stem, CFG.dl_file("cur").stem, DL_SPAN, _snap, _snap_md))
+FOOT_GEN = "生成于 %s" % _snap
 
 payload = json.dumps({**data, "KW": KW}, ensure_ascii=False)
 hot_json = json.dumps(HOT, ensure_ascii=False)
@@ -491,12 +505,12 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   <div class="charts" style="margin-top:16px">
     <div class="chart-card">
       <h3>🐳 鲸云下载排行</h3>
-      <div class="sub">云游戏下载 Top 12（本期 9.28-10.11 合计，14 天），右列为跨期环比</div>
+      <div class="sub">云游戏下载 Top 12（本期 __RANGE__ 合计，__DLSPAN__），右列为跨期环比</div>
       <div id="dlChart"></div>
     </div>
     <div class="chart-card">
-      <h3>📉 鲸云下载 14 天逐日趋势</h3>
-      <div class="sub">本期 9/28 - 10/11 每日下载总量，假期与周末双高峰</div>
+      <h3>__DAILY_TITLE__</h3>
+      <div class="sub">__DAILY_SUB__</div>
       <div id="dailyChart"></div>
     </div>
   </div>
@@ -552,8 +566,8 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
   </div>
 
   <div class="footer">
-    数据来源：搜索量9.28-10.11.xlsx（神策·搜索事件，9/28 与 10/5 两个周一快照）· 鲸云下载.xlsx（神策·云游戏，14 天逐日）· SteamDB 10/12 实时榜 · 热点为 10/12 联网检索<br>
-    端游命中 <span id="f1"></span> 词 / <span id="f2"></span> 次，占搜索总量 <span id="f3"></span>%，覆盖 <span id="f4"></span> 款 · 生成于 2026-10-12
+    __FOOT_SRC__<br>
+    端游命中 <span id="f1"></span> 词 / <span id="f2"></span> 次，占搜索总量 <span id="f3"></span>%，覆盖 <span id="f4"></span> 款 · __FOOT_GEN__
   </div>
 </div>
 
@@ -569,6 +583,7 @@ svg text{font-family:"Microsoft YaHei",sans-serif}
 
 <script>
 const DATA = __DATA__;
+const DAILY_N = __DAILY_N__;
 const HOT = __HOT__;
 const SUM = __SUM__;
 const COVERS = __COVERS__;
@@ -639,7 +654,7 @@ function countUp(el, target, dur, suffix){
 /* 无对应游戏图的热点，用真实数据现画一张「数据封面」，不塞空洞占位图 */
 function vizDaily(){
   const D = DATA.daily, V = D.values, mx = Math.max.apply(null, V);
-  return '<div class="hot-viz"><div class="vt">14 天逐日下载 · 周末效应</div>' +
+  return '<div class="hot-viz"><div class="vt">'+(DAILY_N>=7?'14 天逐日下载 · 周末效应':DAILY_N+' 期下载量对比')+'</div>' +
     '<div style="display:flex;align-items:flex-end;gap:3px;height:52px">' +
       V.map((v,i)=>'<i title="'+esc(D.labels[i])+' '+fmt(v)+'" style="flex:1;display:block;border-radius:2px 2px 0 0;height:'+
         Math.max(10,Math.round(v/mx*100))+'%;background:'+(v===mx?'#ffd166':'rgba(255,255,255,.5)')+'"></i>').join("") +
@@ -850,8 +865,8 @@ function drawDaily(){
       dots + labs +
     '</svg>' +
     '<div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--sub)">' +
-      '<span>14 天合计 <b style="color:var(--txt)">'+fmt(total)+'</b></span>' +
-      '<span>日均 <b style="color:var(--txt)">'+fmt(Math.round(total/n))+'</b></span>' +
+      '<span>'+(DAILY_N>=7?'14 天合计':'合计')+' <b style="color:var(--txt)">'+fmt(total)+'</b></span>' +
+      '<span>'+(DAILY_N>=7?'日均':'均值')+' <b style="color:var(--txt)">'+fmt(Math.round(total/n))+'</b></span>' +
       '<span>最高 <b style="color:var(--up)">'+fmt(mx)+'</b>（'+esc(L[V.indexOf(mx)])+'）</span>' +
       '<span>最低 <b style="color:var(--down)">'+fmt(mn)+'</b>（'+esc(L[V.indexOf(mn)])+'）</span>' +
     '</div>';
@@ -1062,7 +1077,11 @@ TAB_ORDER.forEach(renderTable);
 html = (HTML.replace("__DATA__", payload).replace("__HOT__", hot_json)
             .replace("__SUM__", sum_json).replace("__COVERS__", cov_json)
             .replace("__TITLE__", TITLE).replace("__SUB__", SUB)
-            .replace("__SNAP__", _snap))
+            .replace("__SNAP__", _snap)
+            .replace("__RANGE__", _range).replace("__DLSPAN__", DL_SPAN)
+            .replace("__DAILY_TITLE__", DAILY_TITLE).replace("__DAILY_SUB__", DAILY_SUB)
+            .replace("__FOOT_SRC__", FOOT_SRC).replace("__FOOT_GEN__", FOOT_GEN)
+            .replace("__DAILY_N__", str(DAILY_N)))
 # 草稿态打标：08 门禁据此拒收，人打开源码也一眼能看出
 if _need:
     html = html.replace('<body data-theme="light">',

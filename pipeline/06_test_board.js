@@ -1,6 +1,6 @@
 // ============================================================================
 // 端游周报流水线 · 步骤 06：jsdom 渲染回归测试
-// 运行：node 06_test_board.js        （需先 npm i jsdom）
+// 运行：NODE_PATH="<含 jsdom 的 node_modules>" node 06_test_board.js
 // ----------------------------------------------------------------------------
 // 作用：无头渲染 05 产出的 HTML，检查各区块是否真的渲染出来（行数）、
 //       可见文本有没有 undefined / NaN / [object，以及有没有 JS 运行时错误。
@@ -70,7 +70,7 @@ const checks = [
   ['跨期对比行(搜索)', n('#cmpChart .crow'), 12],
   ['鲸云下载排行行', n('#dlChart .rrow'), 12],
   ['鲸云逐日趋势 SVG', n('#dailyChart svg'), 1],
-  ['鲸云逐日趋势数据点', n('#dailyChart circle'), 14],
+  ['鲸云趋势数据点(按 data.json 粒度派生)', n('#dailyChart circle'), (DD.daily && DD.daily.labels ? DD.daily.labels.length : 0)],
   ['Steam 热度行', n('#stChart .rrow'), 15],
   ['品类环形扇区', n('#catChart .cat-ring path'), 8],
   ['品类排行行', n('#catChart .cat-row'), 8],

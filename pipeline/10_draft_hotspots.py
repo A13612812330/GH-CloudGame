@@ -178,9 +178,12 @@ def build_hot(data):
     site = num(k.get("site_chg"))
     dl_chg = num(k.get("dl_chg"))
     edge = (s_chg - site) if (s_chg is not None and site is not None) else None
+    _up = (s_chg or 0) >= 0
+    _up2 = (dl_chg or 0) >= 0
+    _dir = "同涨" if (_up and _up2) else ("同跌" if (not _up and not _up2) else "一涨一跌")
     items.append(item(
-        "📈 大盘总览", "up" if (s_chg or 0) >= 0 else "down",
-        "端游两源同涨：搜索 {:s}、下载 {:s}".format(pct(s_chg), pct(dl_chg)),
+        "📈 大盘总览", "up" if _up else "down",
+        "端游两源{:s}：搜索 {:s}、下载 {:s}".format(_dir, pct(s_chg), pct(dl_chg)),
         "本期端游搜索命中 {n} 款 / {hit} 次，跨期 {sc}（上期 {prev} 次）；"
         "鲸云下载 {dl} 次，跨期 {dc}（上期 {dlp} 次）。全站搜索同期 {sz}，"
         "端游占比由 {r2}% 变为 {r1}%{edge}。".format(
